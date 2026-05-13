@@ -1,0 +1,11 @@
+do_token = "MY_DO_TOKEN"
+
+region       = "MY_REGION"
+project_name = "MY_PROJECT"
+droplet_size = "MY_DROP_SIZE"
+image        = "MY_IMAGE"
+
+ssh_public_key_path = "MY_KEY_PATH"
+
+existing_vpc_uuid = "MY_VPC"
+cm_private_ip     = "MY_CM_IP"

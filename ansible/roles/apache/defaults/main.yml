@@ -1,0 +1,3 @@
+---
+apache_web_root: /var/www/html
+apache_server_name: localhost

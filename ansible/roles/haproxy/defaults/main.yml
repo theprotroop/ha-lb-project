@@ -1,0 +1,6 @@
+---
+haproxy_frontend_port: 80
+haproxy_stats_port: 8404
+haproxy_stats_uri: /stats
+haproxy_metrics_uri: /metrics
+haproxy_balance_method: roundrobin

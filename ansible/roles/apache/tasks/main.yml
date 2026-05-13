@@ -1,0 +1,45 @@
+---
+- name: Install Apache
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Deploy Apache index page
+  template:
+    src: index.html.j2
+    dest: "{{ apache_web_root }}/index.html"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Deploy Apache virtual host
+  template:
+    src: app.conf.j2
+    dest: /etc/apache2/sites-available/app.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart apache
+  become: true
+
+- name: Disable default Apache site
+  command: a2dissite 000-default.conf
+  become: true
+  notify: restart apache
+  changed_when: true
+
+- name: Enable Apache app site
+  command: a2ensite app.conf
+  become: true
+  notify: restart apache
+  changed_when: true
+
+- name: Ensure Apache is running
+  service:
+    name: apache2
+    state: started
+    enabled: true
+  become: true

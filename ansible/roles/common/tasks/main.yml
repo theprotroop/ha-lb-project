@@ -1,0 +1,58 @@
+---
+# Create automation user used by Ansible for future management
+- name: Create automation user
+  user:
+    name: "{{ automation_user }}"
+    shell: "{{ automation_shell }}"
+    groups: "{{ automation_group }}"
+    append: yes
+    create_home: yes
+
+# Create SSH directory for automation user
+- name: Create SSH directory
+  file:
+    path: "/home/{{ automation_user }}/.ssh"
+    state: directory
+    owner: "{{ automation_user }}"
+    group: "{{ automation_user }}"
+    mode: '0700'
+
+# Copy CM public SSH key to automation user's authorized_keys
+- name: Configure SSH key authentication
+  authorized_key:
+    user: "{{ automation_user }}"
+    state: present
+    key: "{{ lookup('file', automation_ssh_public_key_path) }}"
+
+# Configure passwordless sudo for automation user
+- name: Configure passwordless sudo
+  copy:
+    dest: "/etc/sudoers.d/{{ automation_user }}"
+    content: "{{ automation_user }} ALL=(ALL) NOPASSWD:ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+
+# Disable password-based SSH authentication
+- name: Disable password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+  notify: restart ssh
+
+# Disable direct root SSH login
+- name: Disable root SSH login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+  notify: restart ssh
+
+# Ensure SSH public key authentication remains enabled
+- name: Enable public key authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PubkeyAuthentication'
+    line: 'PubkeyAuthentication yes'
+  notify: restart ssh

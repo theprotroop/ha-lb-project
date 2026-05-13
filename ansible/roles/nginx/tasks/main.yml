@@ -1,0 +1,45 @@
+---
+# Install Nginx package
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+  become: true
+
+# Deploy custom web page
+- name: Deploy index page
+  template:
+    src: index.html.j2
+    dest: "{{ nginx_web_root }}/index.html"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+# Deploy Nginx virtual host configuration
+- name: Deploy Nginx app configuration
+  template:
+    src: app.conf.j2
+    dest: /etc/nginx/conf.d/app.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart nginx
+  become: true
+
+# Remove default site configuration
+- name: Remove default Nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: restart nginx
+  become: true
+
+# Ensure Nginx service is enabled and running
+- name: Ensure Nginx is running
+  service:
+    name: nginx
+    state: started
+    enabled: true
+  become: true
