@@ -1,0 +1,7 @@
+---
+- name: SSH and security hardening on all servers
+  hosts: all
+  become: true
+
+  roles:
+    - common-hardening

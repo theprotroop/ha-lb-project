@@ -1,14 +1,4 @@
 ---
-# Bootstrap and hardening phase
-# Initial connection happens as root because Terraform
-# already injected the CM SSH public key into root user.
-
-- name: Bootstrap and harden all servers
-  hosts: all
-  become: true
-  roles:
-    - common
-
 - name: Configure Nginx backend
   hosts: nginx
   become: true

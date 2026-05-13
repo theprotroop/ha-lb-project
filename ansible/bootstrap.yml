@@ -1,0 +1,10 @@
+---
+# user creation phase
+# Initial connection happens as root because Terraform
+# already injected the CM SSH public key into root user.
+- name:  Non-root user creation on all servers
+  hosts: all
+  become: true
+
+  roles:
+    - common-user
